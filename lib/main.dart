@@ -317,28 +317,33 @@ class UIWidgetState extends State<UIWidgetApp> {
   Widget build(BuildContext context) {
     return RepaintBoundary(
         child: MaterialApp(
-            // debugShowCheckedModeBanner: false,
-            themeMode: ThemeMode.system,
-            theme: ThemeData(
-                primarySwatch: Colors.red, brightness: Brightness.light),
-            darkTheme: ThemeData(
-                primarySwatch: Colors.blue, brightness: Brightness.dark),
-            builder: (context, child) => Container(
-                constraints: BoxConstraints.expand(),
-                color: Colors.white54,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      time,
-                      style: Theme.of(context).textTheme.subtitle1.copyWith(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                    ElevatedButton(child: Text('Click'), onPressed: () {}),
-                    Text('Flutter UI Widget',
-                        style: Theme.of(context).textTheme.subtitle1.copyWith(
-                            color: Theme.of(context).colorScheme.primary)),
-                  ],
-                ))));
+      // debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.system,
+      theme: ThemeData(primarySwatch: Colors.red, brightness: Brightness.light),
+      darkTheme:
+          ThemeData(primarySwatch: Colors.blue, brightness: Brightness.dark),
+      builder: (context, child) => Container(
+        constraints: BoxConstraints.expand(),
+        color: Colors.white54,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              time,
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1
+                  .copyWith(color: Theme.of(context).colorScheme.primary),
+            ),
+            ElevatedButton(child: Text('Click'), onPressed: () {}),
+            Text('Flutter UI Widget',
+                style: Theme.of(context)
+                    .textTheme
+                    .subtitle1
+                    .copyWith(color: Theme.of(context).colorScheme.primary)),
+          ],
+        ),
+      ),
+    ));
   }
 }
