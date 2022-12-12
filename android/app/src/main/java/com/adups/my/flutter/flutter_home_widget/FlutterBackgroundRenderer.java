@@ -192,7 +192,7 @@ public class FlutterBackgroundRenderer
                     "connectSurfaceToRenderer() should only be called when flutterRenderer are non-null.");
         }
 
-        flutterRenderer.startRenderingToSurface(imageReader.getSurface());
+        flutterRenderer.startRenderingToSurface(imageReader.getSurface(),true);
     }
 
     // FlutterRenderer must be non-null.
