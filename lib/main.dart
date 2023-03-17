@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -244,12 +244,15 @@ Future<Uint8List> _drawWidget(Map configs, int width, int height) async {
   if (!configs.containsKey('color')) throw ArgumentError();
   var color = Color(int.parse(configs['color']));
   var text = configs['text'];
-  var pictureRecorder = PictureRecorder();
+  var pictureRecorder = ui.PictureRecorder();
   var rect = Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble());
   var canvas = Canvas(pictureRecorder, rect);
+  final imageForCanvas = await loadUiImage('assets/mask.png');
+  canvas.drawImage(imageForCanvas, Offset(0, 0), Paint());
+
   _drawWidgetCanvas(canvas, rect, color, text);
   var image = await pictureRecorder.endRecording().toImage(width, height);
-  var byteData = await image.toByteData(format: ImageByteFormat.rawRgba);
+  var byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
   return byteData.buffer.asUint8List();
 }
 
@@ -299,7 +302,8 @@ class UIWidgetState extends State<UIWidgetApp> {
       if (call.method == 'drawWidget') {
         RenderRepaintBoundary boundary = context.findRenderObject();
         var image = await boundary.toImage(pixelRatio: call.arguments['scale']);
-        var byteData = await image.toByteData(format: ImageByteFormat.rawRgba);
+        var byteData =
+            await image.toByteData(format: ui.ImageByteFormat.rawRgba);
         print(byteData.lengthInBytes);
         return byteData.buffer.asUint8List();
       }
@@ -318,9 +322,10 @@ class UIWidgetState extends State<UIWidgetApp> {
   Widget build(BuildContext context) {
     return RepaintBoundary(
         child: MaterialApp(
-      // debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
-      theme: ThemeData(primarySwatch: Colors.red, brightness: Brightness.light),
+      theme:
+          ThemeData(primarySwatch: Colors.green, brightness: Brightness.light),
       darkTheme:
           ThemeData(primarySwatch: Colors.blue, brightness: Brightness.dark),
       builder: (context, child) => Container(
@@ -337,7 +342,12 @@ class UIWidgetState extends State<UIWidgetApp> {
                   .copyWith(color: Theme.of(context).colorScheme.primary),
             ),
             ElevatedButton(child: Text('Click'), onPressed: () {}),
-            Text('Flutter UI Widget',
+            ElevatedButton(child: Text('Bag'), onPressed: () {}),
+            CustomPaint(
+              size: Size(200, 200),
+              painter: WidgetPainter(),
+            ),
+            Text('Flutter UI Widgets',
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1
@@ -346,5 +356,26 @@ class UIWidgetState extends State<UIWidgetApp> {
         ),
       ),
     ));
+  }
+}
+
+Future<ui.Image> loadUiImage(String assetPath) async {
+  final data = await rootBundle.load(assetPath);
+  final list = Uint8List.view(data.buffer);
+  final completer = Completer<ui.Image>();
+  ui.decodeImageFromList(list, completer.complete);
+  return completer.future;
+}
+
+class WidgetPainter extends CustomPainter {
+  @override
+  void paint(ui.Canvas canvas, ui.Size size) async {
+    final imageForCanvas = await loadUiImage('assets/mask.png');
+    canvas.drawImage(imageForCanvas, Offset(0, 0), Paint());
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
